@@ -15,7 +15,7 @@ status_code_server_error = "500"
 status_code_input_invalid = "400"
 data_format = "{id}##{value}"
 
-receiver_in_relay_mode = True
+receiver_in_relay_mode = False
 targetDir = "/var/log/iot-capture/"
 terminal_receivers = ["121.0.0.1"]
 switch_to_peers_immediately = False
