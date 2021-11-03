@@ -15,11 +15,25 @@ class iotDataSender:
             try:
                 # Connect to server and send data
                 self.socket.sendall(bytes(data+ "\n", global_settings.comms_encoding))
-                print("Sent:     {}".format(data))
+                #print("Sent:     {}".format(data))
 
                 # Receive data from the server and shut down
                 transferStatus = str(self.socket.recv(global_settings.comms_chunk_size), global_settings.comms_encoding)
-                print("Received: {}".format(transferStatus))
+                #print("Received: {}".format(transferStatus))
+
+                if transferStatus == global_settings.status_code_ok:
+                    print("Request OK")
+                elif transferStatus == global_settings.status_code_server_error:
+                    print("Server reported internal error. Forcing server switch.")
+                    self.currentHost = self.handleServerSwitch(self.currentHost)
+                    raise Exception("Internal Server error received.")
+                elif transferStatus == global_settings.status_code_input_invalid:
+                    print("Server rejected data submitted as invalid. Discarding data.")
+                else:
+                    print("Received an unspecified status code from server. Forcing server switch.")
+                    self.currentHost = self.handleServerSwitch(self.currentHost)
+                    raise Exception("No valid server response received.")
+
                 self.socket.close()
                 return
             except:
@@ -28,7 +42,11 @@ class iotDataSender:
 
     def establishConnection(self):
         targetServer = self.currentHost
-        print("Establishing connection...")
+        #print("Establishing connection...")
+
+        if targetServer == None:
+            print("No valid target server. Connection failed.")
+            return False
         
         while True:
             try:
@@ -62,13 +80,3 @@ class iotDataSender:
             print("Switching to peer nodes for connection.")
             listToWork = global_settings.peer_nodes
             self.onPeerFallback = True
-
-
-
-
-
-
-
-# Create a socket (SOCK_STREAM means a TCP socket)
-
-
