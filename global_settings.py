@@ -14,6 +14,10 @@ status_code_ok = "200"
 status_code_server_error = "500"
 status_code_input_invalid = "400"
 data_format = "{id}##{value}"
+generator_induce_errors = True
+generator_induced_error_range_floor = 1
+generator_induced_error_range_ceiling = 10
+generator_induced_error_threshold = 9
 
 receiver_in_relay_mode = False
 targetDir = "/var/log/iot-capture/"
