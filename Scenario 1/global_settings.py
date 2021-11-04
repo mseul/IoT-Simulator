@@ -21,7 +21,7 @@ generator_induced_error_threshold = 9
 
 receiver_in_relay_mode = False
 targetDir = "/var/log/iot-capture/"
-terminal_receivers = ["127.0.0.1"]
+terminal_receivers = ["192.168.86.86"]
 switch_to_peers_immediately = False
 peer_nodes = ["127.0.0.1"]
 authorized_senders = []
