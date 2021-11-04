@@ -5,6 +5,7 @@ import uuid
 import global_settings
 import sender
 import codecs
+import random
 
 class iotGenerator:
     def __init__(self):
@@ -34,6 +35,7 @@ class iotGenerator:
         time.sleep(random.randrange(global_settings.sleepMin, global_settings.sleepMax) / global_settings.sleepDivide)
 
 def main():
+    random.shuffle(global_settings.peer_nodes)
     theGenerator = iotGenerator()
 
     while True:

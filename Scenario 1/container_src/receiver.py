@@ -3,6 +3,7 @@ import global_settings
 import sender
 import validator
 import time
+import random
 
 launch_time = None
 receiver_enforcement_active = False
@@ -44,6 +45,8 @@ class iotHandler(socketserver.BaseRequestHandler):
  
 
 if __name__ == "__main__":
+    random.shuffle(global_settings.peer_nodes)
+
     with myCustomServer((global_settings.server_bind, global_settings.comms_port), iotHandler) as server:
         print ("Starting server on {0}:{1}".format(global_settings.server_bind, global_settings.comms_port))
         launch_time = time.time()

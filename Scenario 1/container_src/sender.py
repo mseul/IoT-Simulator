@@ -2,12 +2,14 @@ import socket
 import sys
 import random
 import global_settings
+import socket
 
 class iotDataSender:
-    def __init__(self):
+    def __init__(self, myIP = "NOT_DEFINED"):
         self.currentHost = global_settings.terminal_receivers[0]
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.onPeerFallback = False
+        self.mainIP = myIP
 
     def sendData(self, data):
         transferStatus = None
@@ -50,6 +52,9 @@ class iotDataSender:
         
         while True:
             try:
+                if (targetServer == self.mainIP):
+                    raise Exception("Loopback connection detected. Rejecting this connection attempt.")
+
                 print("Connecting to {0}:{1}".format(targetServer, str(global_settings.comms_port)))
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.socket.connect((targetServer, global_settings.comms_port))
@@ -71,7 +76,7 @@ class iotDataSender:
 
         while True:
             for aServer in listToWork:
-                if not (aServer == failedServer):
+                if (not (aServer == failedServer)) and (not (aServer == self.mainIP)):
                     return aServer
 
             if self.onPeerFallback:
