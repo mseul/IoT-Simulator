@@ -1,0 +1,1 @@
+ sudo docker run --rm -t -i "python:3-alpine" /bin/sh
