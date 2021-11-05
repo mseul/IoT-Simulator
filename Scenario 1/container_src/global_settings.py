@@ -19,10 +19,8 @@ generator_induced_error_range_floor = 1
 generator_induced_error_range_ceiling = 10
 generator_induced_error_threshold = 9
 
-receiver_in_relay_mode = True
 terminal_receivers = ["192.168.86.86"]
 switch_to_peers_immediately = True
 peer_nodes = ["172.18.0.5","172.18.0.6","172.18.0.7","172.18.0.8","172.18.0.9","172.18.0.10","172.18.0.11","172.18.0.12","172.18.0.13","172.18.0.14","172.18.0.15"]
 authorized_senders = ["172.18.0.5","172.18.0.6","172.18.0.7","172.18.0.8","172.18.0.9","172.18.0.10","172.18.0.11","172.18.0.12","172.18.0.13","172.18.0.14","172.18.0.15"]
-node_identifier = "iot0-1fd78078"
 receiver_enforce_authorized_senders_time_sec = -1

@@ -7,10 +7,20 @@ import sender
 import codecs
 import random
 
+import argparse
+
+def arg_parse():
+    theParser = argparse.ArgumentParser(description="IoT Simulator")
+    theParser.add_argument("--localip", dest="localip", action="store", required=True)
+    theParser.add_argument("--nodename", dest="nodename", action="store", required=True)
+    return theParser.parse_args()
+
+
 class iotGenerator:
     def __init__(self):
         self.currentCurveStep = global_settings.curveStep
-        self.senderObj = sender.iotDataSender()
+        self.myArgs = arg_parse()
+        self.senderObj = sender.iotDataSender(myIP = self.myArgs.localip)
 
     def generateValue(self):
         self.currentCurveStep += 1
@@ -27,7 +37,7 @@ class iotGenerator:
                 else:
                     return str(codecs.encode(bytes(str(uuid.uuid4()),"utf-8"),"zip"))
 
-        return global_settings.data_format.format(id=global_settings.node_identifier, value=str(simulationVal))
+        return global_settings.data_format.format(id=self.myArgs.nodename, value=str(simulationVal))
 
     def generateSendSleep(self):
         generatedValue = self.generateValue()
