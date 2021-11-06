@@ -3,6 +3,8 @@ import sys
 import random
 import global_settings
 import socket
+import sys
+import errno
 
 class iotDataSender:
     def __init__(self, myIP = "NOT_DEFINED"):
@@ -24,23 +26,35 @@ class iotDataSender:
                 #print("Received: {}".format(transferStatus))
 
                 if transferStatus == global_settings.status_code_ok:
-                    print("Request OK")
+                    #print("Request OK")
+                    pass
                 elif transferStatus == global_settings.status_code_server_error:
                     print("Server reported internal error. Forcing server switch.")
                     self.currentHost = self.handleServerSwitch(self.currentHost)
-                    raise Exception("Internal Server error received.")
+                    raise ConnectionAbortedError
                 elif transferStatus == global_settings.status_code_input_invalid:
-                    print("Server rejected data submitted as invalid. Discarding data.")
+                    #print("Server rejected data submitted as invalid. Discarding data.")
+                    pass
                 else:
-                    print("Received an unspecified status code from server. Forcing server switch.")
+                    print("Received an unspecified status code '{code}' from server. Forcing server switch.".format(code=transferStatus))
                     self.currentHost = self.handleServerSwitch(self.currentHost)
-                    raise Exception("No valid server response received.")
+                    raise ConnectionAbortedError
 
-                self.socket.close()
+                #self.socket.close()
                 return
-            except:
-                if not self.establishConnection():
-                    raise
+            except KeyboardInterrupt:
+                raise
+            except BrokenPipeError:
+                    if not self.establishConnection():
+                        raise
+            except ConnectionAbortedError:
+                    if not self.establishConnection():
+                        raise
+            except OSError as theError:
+                    if not self.establishConnection():
+                        raise
+            else:
+                raise
 
     def establishConnection(self):
         targetServer = self.currentHost
@@ -60,8 +74,10 @@ class iotDataSender:
                 self.socket.connect((targetServer, global_settings.comms_port))
                 self.currentHost = targetServer
                 return True
-            except:
-                print("Connecting failed. Switching server.")
+            except KeyboardInterrupt:
+                raise
+            else:
+                print("Connecting to {0}:{1} failed. Switching server.".format(targetServer, str(global_settings.comms_port)))
                 targetServer = self.handleServerSwitch(targetServer)
                 if targetServer == None:
                     print("Out of viable servers. Connection failed.")
