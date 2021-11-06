@@ -7,10 +7,18 @@ import sys
 import errno
 
 class iotDataSender:
-    def __init__(self, myIP = "NOT_DEFINED"):
+    def __init__(self, myIP = global_settings.default_not_defined_str):
+
         self.currentHost = global_settings.terminal_receivers[0]
+
+        if global_settings.client_uses_broken_terminal_threshold > 0:
+            if random.randrange(1,10) > global_settings.client_uses_broken_terminal_threshold:
+                print("This client starts off with a broken connection.")
+                self.currentHost = global_settings.terminal_receivers_broken[0]
+
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.onPeerFallback = False
+        self.peerListPosition = 0
         self.mainIP = myIP
 
     def sendData(self, data):
@@ -44,17 +52,26 @@ class iotDataSender:
                 return
             except KeyboardInterrupt:
                 raise
-            except BrokenPipeError:
-                    if not self.establishConnection():
-                        raise
-            except ConnectionAbortedError:
-                    if not self.establishConnection():
-                        raise
-            except OSError as theError:
-                    if not self.establishConnection():
-                        raise
-            else:
-                raise
+            except:
+                if not self.establishConnection():
+                    raise                
+            # except ConnectionResetError:
+            #         if not self.establishConnection():
+            #             raise
+            # except ConnectionRefusedError:
+            #         if not self.establishConnection():
+            #             raise
+            # except BrokenPipeError:
+            #         if not self.establishConnection():
+            #             raise
+            # except ConnectionAbortedError:
+            #         if not self.establishConnection():
+            #             raise
+            # except OSError as theError:
+            #         if not self.establishConnection():
+            #             raise
+            # else:
+            #     raise
 
     def establishConnection(self):
         targetServer = self.currentHost
@@ -76,7 +93,7 @@ class iotDataSender:
                 return True
             except KeyboardInterrupt:
                 raise
-            else:
+            except:
                 print("Connecting to {0}:{1} failed. Switching server.".format(targetServer, str(global_settings.comms_port)))
                 targetServer = self.handleServerSwitch(targetServer)
                 if targetServer == None:
@@ -90,10 +107,17 @@ class iotDataSender:
         else:
             listToWork = global_settings.terminal_receivers
 
+        listLen = len(listToWork)
+
         while True:
-            for aServer in listToWork:
-                if (not (aServer == failedServer)) and (not (aServer == self.mainIP)):
-                    return aServer
+            aServer = listToWork[self.peerListPosition]
+            self.peerListPosition += 1
+
+            if (not (aServer == failedServer)) and (not (aServer == self.mainIP)):
+                return aServer
+            
+            if self.peerListPosition < listLen:
+                continue
 
             if self.onPeerFallback:
                 return None
@@ -101,3 +125,4 @@ class iotDataSender:
             print("Switching to peer nodes for connection.")
             listToWork = global_settings.peer_nodes
             self.onPeerFallback = True
+            self.peerListPosition = 0
