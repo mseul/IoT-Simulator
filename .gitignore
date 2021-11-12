@@ -113,3 +113,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/launch.json
+Scenario 2/compliance_server_shared
+Scenario 2/peering_key

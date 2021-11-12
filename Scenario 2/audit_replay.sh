@@ -1,24 +1,37 @@
 #!/bin/bash
 
 generate_test_for_fail() {
-	echo "if ! $2 &>/dev/null; then    echo $1 PASS; else echo $1 FAIL; fi;"
+	echo "if ! "$2" &>/dev/null; then    echo $1 PASS; else echo $1 FAIL; fi;"
 }
 
-#echo $1
-#echo $2
+peerhost=$1
 
 tests=""
 while IFS= read -r line; do
-    #tests["${line%%=*}"]="${line#*=}"
     tests+=$(generate_test_for_fail "${line%%=*}" "${line#*=}")
 done
 
 testoutput=""
 for atest in "${tests[@]}"
 do
-	testoutput+=$(eval "$atest")
+	testoutput+=$(eval "$atest" 2>1)
 done
 
-mytesthash=$(echo -n $testoutput | md5sum)
+echo "Test Outcome: $testoutput"
+testoutputsanitized=${testoutput// /}
+testoutputsanitized=${testoutputsanitized//[^a-zA-Z0-9_]/}
 
-echo $mytesthash
+if [ -n "$peerhost" ]; then
+    echo "Connecting to Peer $peerhost..."
+    peertestoutput+=$(ssh -tt -o StrictHostKeyChecking=accept-new -i ./peering_key root@$peerhost "$atest" 2>/dev/null)
+    echo "Peer Outcome: $peertestoutput"
+    peertestoutputsanitized=${peertestoutput// /}
+    peertestoutputsanitized=${peertestoutputsanitized//[^a-zA-Z0-9_]/}    
+
+    if [[ "$testoutputsanitized" == "$peertestoutputsanitized" ]]; then
+        echo "Results MATCH"
+    else
+        echo "Results do NOT match."
+    fi
+
+fi
