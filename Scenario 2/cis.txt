@@ -1,0 +1,30 @@
+CIS Distribution Independent Linux 
+Benchmark v2.0.0 - 07-16-2019 
+License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
+https://downloads.cisecurity.org/#/
+https://learn.cisecurity.org/l/799323/2020-06-15/sn9j
+
+
+1.1.3
+mount | grep -E '\s/tmp\s' | grep -v nodev
+Expect: No results ($?=1)
+
+2.1.8 
+grep -R "^telnet" /etc/inetd.*
+Expect: No results ($?=2)
+
+3.3.3
+cat /etc/hosts.deny | grep -qvz "ALL: ALL"
+Expect: Hit (?$=0)
+
+4.2.1.1
+dpkg -s rsyslog | grep -qvz "install ok installed"
+Expect: Hit (?$=0)
+
+5.4.1.1
+grep PASS_MAX_DAYS /etc/login.defs | grep -qvz "PASS_MAX_DAYS 365"
+Expect: Hit (?$=0)
+
+
+6.1.11
+df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nouser  | wc -l | grep -qvz 0
