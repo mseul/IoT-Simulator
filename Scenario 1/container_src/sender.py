@@ -7,11 +7,11 @@ import sys
 import errno
 
 class iotDataSender:
-    def __init__(self, myIP = global_settings.default_not_defined_str):
+    def __init__(self, myIP = global_settings.default_not_defined_str, usebrokenterminal = global_settings.client_uses_broken_terminal_threshold):
 
         self.currentHost = global_settings.terminal_receivers[0]
 
-        if global_settings.client_uses_broken_terminal_threshold > 0:
+        if usebrokenterminal > 0:
             if random.randrange(1,10) > global_settings.client_uses_broken_terminal_threshold:
                 print("This client starts off with a broken connection.")
                 self.currentHost = global_settings.terminal_receivers_broken[0]

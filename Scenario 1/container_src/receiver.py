@@ -10,7 +10,7 @@ import fastwritecounter
 
 class LockedIotSender:
     def __init__(self, myIP = global_settings.default_not_defined_str):
-        self.IoTSender = sender.iotDataSender(myIP = myIP)
+        self.IoTSender = sender.iotDataSender(myIP = myIP, usebrokenterminal = 0)
         self.lock = threading.Lock()
 
 class lockedIotSenderPool:
