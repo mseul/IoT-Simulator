@@ -13,6 +13,7 @@ def arg_parse():
     theParser = argparse.ArgumentParser(description="IoT Simulator")
     theParser.add_argument("--localip", dest="localip", action="store", required=True)
     theParser.add_argument("--nodename", dest="nodename", action="store", required=True)
+    theParser.add_argument("--peered", dest="peered", action="store", required=True)
     return theParser.parse_args()
 
 
@@ -20,7 +21,7 @@ class iotGenerator:
     def __init__(self):
         self.currentCurveStep = global_settings.curveStep
         self.myArgs = arg_parse()
-        self.senderObj = sender.iotDataSender(myIP = self.myArgs.localip)
+        self.senderObj = sender.iotDataSender(myIP = self.myArgs.localip, usebrokenterminal = self.myArgs.peered)
 
     def generateValue(self):
         self.currentCurveStep += 1

@@ -7,14 +7,13 @@ import sys
 import errno
 
 class iotDataSender:
-    def __init__(self, myIP = global_settings.default_not_defined_str, usebrokenterminal = global_settings.client_uses_broken_terminal_threshold):
+    def __init__(self, myIP = global_settings.default_not_defined_str, usebrokenterminal = 0):
 
         self.currentHost = global_settings.terminal_receivers[0]
 
-        if usebrokenterminal > 0:
-            if random.randrange(1,10) > global_settings.client_uses_broken_terminal_threshold:
-                print("This client starts off with a broken connection.")
-                self.currentHost = global_settings.terminal_receivers_broken[0]
+        if usebrokenterminal == "1":
+            print("This client starts off with a broken connection.")
+            self.currentHost = "256.256.256.256"
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.onPeerFallback = False
@@ -55,23 +54,6 @@ class iotDataSender:
             except:
                 if not self.establishConnection():
                     raise                
-            # except ConnectionResetError:
-            #         if not self.establishConnection():
-            #             raise
-            # except ConnectionRefusedError:
-            #         if not self.establishConnection():
-            #             raise
-            # except BrokenPipeError:
-            #         if not self.establishConnection():
-            #             raise
-            # except ConnectionAbortedError:
-            #         if not self.establishConnection():
-            #             raise
-            # except OSError as theError:
-            #         if not self.establishConnection():
-            #             raise
-            # else:
-            #     raise
 
     def establishConnection(self):
         targetServer = self.currentHost
